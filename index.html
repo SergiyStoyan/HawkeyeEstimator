@@ -6,8 +6,11 @@
 </head>
 
 <body>
-5
+7
 <script>
+
+window.googleDocCallback = function () {console.log('!!!'); return true; };
+
   var scriptId = 'AKfycbyz89pDnOcqfS_l-69w-MW3NiNVkGmQgFoKQ_90eeVg';
   var xhr = new XMLHttpRequest();
   xhr.onreadystatechange = function () {
@@ -25,7 +28,7 @@
     console.log('test2', this.status, '_' + this.statusText, '_' + this.getResponseHeader("Location"));
   };
 
-  xhr.open("GET", 'https://script.google.com/macros/s/AKfycbyz89pDnOcqfS_l-69w-MW3NiNVkGmQgFoKQ_90eeVg/exec?action=test', true);
+  xhr.open("GET", 'https://script.google.com/macros/s/AKfycbyz89pDnOcqfS_l-69w-MW3NiNVkGmQgFoKQ_90eeVg/dev?action=test&callback=googleDocCallback', true);
   xhr.withCredentials = true;
   xhr.setRequestHeader('Content-Type', 'text/plain');
   xhr.send();
@@ -49,7 +52,7 @@ $.ajax({
 	crossDomain: true,
 	url: 'https://script.google.com/macros/s/AKfycbyz89pDnOcqfS_l-69w-MW3NiNVkGmQgFoKQ_90eeVg/dev?action=test',
 	method: "GET",
-	dataType: "jsonp"
+	dataType: "jsonp",
 }).done(function(e) {
 	console.log('ajax2', e);
 }).fail(function( jqXHR, e ) {
@@ -60,6 +63,7 @@ var f = fetch('https://script.google.com/macros/s/AKfycbyz89pDnOcqfS_l-69w-MW3Ni
 	redirect: "follow",
 	method: "GET",
 	//body: JSON.stringify(DATA),
+	mode: 'cors',
 	headers: {
 	"Content-Type": "text/plain;charset=utf-8",
 	},
