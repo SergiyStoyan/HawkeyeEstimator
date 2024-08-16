@@ -6,7 +6,7 @@
 </head>
 
 <body>
-2
+4
 <script>
   var scriptId = 'AKfycbyz89pDnOcqfS_l-69w-MW3NiNVkGmQgFoKQ_90eeVg';
   var xhr = new XMLHttpRequest();
@@ -25,7 +25,7 @@
     console.log('test2', this.status, '_' + this.statusText, '_' + this.getResponseHeader("Location"));
   };
 
-  xhr.open("GET", 'https://script.google.com/macros/s/AKfycbyz89pDnOcqfS_l-69w-MW3NiNVkGmQgFoKQ_90eeVg/dev?action=test', true);
+  xhr.open("GET", 'https://script.google.com/macros/s/AKfycbyz89pDnOcqfS_l-69w-MW3NiNVkGmQgFoKQ_90eeVg/exec?action=test', true);
   xhr.withCredentials = true;
   xhr.setRequestHeader('Content-Type', 'text/plain');
   xhr.send();
@@ -51,12 +51,20 @@ jQuery.ajax({
 	method: "GET",
 	dataType: "jsonp"
 }).done(function(e) {
-	console.log('2', e);
+	console.log('ajax2', e);
 }).fail(function( jqXHR, e ) {
-	console.log('3', e);
+	console.log('ajax3', e);
 });
 
-
+var f = fetch('https://script.google.com/macros/s/AKfycbyz89pDnOcqfS_l-69w-MW3NiNVkGmQgFoKQ_90eeVg/dev?action=test', {
+	redirect: "follow",
+	method: "POST",
+	body: JSON.stringify(DATA),
+	headers: {
+	"Content-Type": "text/plain;charset=utf-8",
+	},
+});
+console.log('fetch', f);
 
 
 </script>
