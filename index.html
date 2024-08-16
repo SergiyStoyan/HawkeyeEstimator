@@ -6,7 +6,7 @@
 </head>
 
 <body>
-4
+5
 <script>
   var scriptId = 'AKfycbyz89pDnOcqfS_l-69w-MW3NiNVkGmQgFoKQ_90eeVg';
   var xhr = new XMLHttpRequest();
@@ -45,7 +45,7 @@
   }));*/
 
 
-jQuery.ajax({
+$.ajax({
 	crossDomain: true,
 	url: 'https://script.google.com/macros/s/AKfycbyz89pDnOcqfS_l-69w-MW3NiNVkGmQgFoKQ_90eeVg/dev?action=test',
 	method: "GET",
@@ -58,8 +58,8 @@ jQuery.ajax({
 
 var f = fetch('https://script.google.com/macros/s/AKfycbyz89pDnOcqfS_l-69w-MW3NiNVkGmQgFoKQ_90eeVg/dev?action=test', {
 	redirect: "follow",
-	method: "POST",
-	body: JSON.stringify(DATA),
+	method: "GET",
+	//body: JSON.stringify(DATA),
 	headers: {
 	"Content-Type": "text/plain;charset=utf-8",
 	},
