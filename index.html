@@ -24,6 +24,7 @@
 
   xhr.open("GET", 'https://script.google.com/macros/s/AKfycbyz89pDnOcqfS_l-69w-MW3NiNVkGmQgFoKQ_90eeVg/dev?action=test', true);
   xhr.withCredentials = true;
+  xhr.setRequestHeader('Content-Type', 'text/plain');
   xhr.send();
 
   /*xhr.open("POST", 'https://script.googleapis.com/v1/scripts/' + scriptId + ':run', true);
