@@ -1,0 +1,65 @@
+<html>
+<head>
+</head>
+
+<body>
+
+<script>
+  var scriptId = 'AKfycbyz89pDnOcqfS_l-69w-MW3NiNVkGmQgFoKQ_90eeVg';
+  var xhr = new XMLHttpRequest();
+  xhr.onreadystatechange = function () {
+    if (this.readyState != 4) 
+      return;
+    if (this.status == 200) {
+      var data = JSON.parse(this.responseText);
+      console.log('test', data);
+      return;
+    }
+      if (this.status === 302) {
+        var location = this.getResponseHeader("Location");
+        return ajax.call(this, location, callback);
+      } 
+    console.log('test2', this.status, '_' + this.statusText, '_' + this.getResponseHeader("Location"));
+  };
+
+  xhr.open("GET", 'https://script.google.com/macros/s/AKfycbyz89pDnOcqfS_l-69w-MW3NiNVkGmQgFoKQ_90eeVg/dev?action=test', true);
+  xhr.withCredentials = true;
+  xhr.send();
+
+  /*xhr.open("POST", 'https://script.googleapis.com/v1/scripts/' + scriptId + ':run', true);
+  xhr.withCredentials = true;
+  //xhr.setRequestHeader("Authorization", "Bearer ### access token ###");
+  //xhr.setRequestHeader('Content-Type', 'application/json');
+  //xhr.setRequestHeader("Origin", 'https://script.google.com');
+  xhr.send(JSON.stringify({
+    function: 'test',
+    parameters: [
+      'qwerty1',
+    ],
+    //"sessionState": string,
+    devMode: true,
+  }));*/
+
+/*jQuery.ajax({
+crossDomain: true,
+url: url,
+method: "GET",
+dataType: "jsonp"
+});
+
+ // log the returned data
+  function loadData(e) {
+  console.log(e);
+  }
+
+*/
+
+
+
+
+
+</script>
+
+
+</body>
+</html>
