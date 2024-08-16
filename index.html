@@ -64,8 +64,9 @@ var f = fetch('https://script.google.com/macros/s/AKfycbyz89pDnOcqfS_l-69w-MW3Ni
 	method: "GET",
 	//body: JSON.stringify(DATA),
 	mode: 'cors',
+	credentials: 'include',
 	headers: {
-	"Content-Type": "text/plain;charset=utf-8",
+		"Content-Type": "text/plain;charset=utf-8",
 	},
 });
 console.log('fetch', f);
