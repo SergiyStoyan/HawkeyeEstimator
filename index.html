@@ -6,7 +6,7 @@
 </head>
 
 <body>
-1
+2
 <script>
   var scriptId = 'AKfycbyz89pDnOcqfS_l-69w-MW3NiNVkGmQgFoKQ_90eeVg';
   var xhr = new XMLHttpRequest();
@@ -50,11 +50,11 @@ jQuery.ajax({
 	url: 'https://script.google.com/macros/s/AKfycbyz89pDnOcqfS_l-69w-MW3NiNVkGmQgFoKQ_90eeVg/dev?action=test',
 	method: "GET",
 	dataType: "jsonp"
+}).done(function(e) {
+	console.log('2', e);
+}).fail(function( jqXHR, e ) {
+	console.log('3', e);
 });
-
-function loadData(e) {
-console.log('2', e);
-}
 
 
 
