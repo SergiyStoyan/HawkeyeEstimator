@@ -1,4 +1,153 @@
+<!DOCTYPE html>
 <html>
+  <head>
+    <title>Drive API Quickstart</title>
+    <meta charset="utf-8" />
+  </head>
+  <body>11
+    <p>Drive API Quickstart</p>
+
+    <!--Add buttons to initiate auth sequence and sign out-->
+    <button id="authorize_button" onclick="handleAuthClick()">Authorize</button>
+    <button id="signout_button" onclick="handleSignoutClick()">Sign Out</button>
+
+    <pre id="content" style="white-space: pre-wrap;"></pre>
+
+    <script type="text/javascript">
+      /* exported gapiLoaded */
+      /* exported gisLoaded */
+      /* exported handleAuthClick */
+      /* exported handleSignoutClick */
+
+      // TODO(developer): Set to client ID and API key from the Developer Console
+      const CLIENT_ID = '884639181188-0l83tpcvhjs71dpcoduh8p3g5t2tbtrs.apps.googleusercontent.com';
+      const API_KEY = 'AIzaSyAhYWhroNdyuiqebRqWXpo7UXMxaFWH05U';
+
+      // Discovery doc URL for APIs used by the quickstart
+      const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/drive/v3/rest';
+
+      // Authorization scopes required by the API; multiple scopes can be
+      // included, separated by spaces.
+      const SCOPES = 'https://www.googleapis.com/auth/drive.metadata.readonly https://www.googleapis.com/auth/drive.file';
+
+      let tokenClient;
+      let gapiInited = false;
+      let gisInited = false;
+
+      document.getElementById('authorize_button').style.visibility = 'hidden';
+      document.getElementById('signout_button').style.visibility = 'hidden';
+
+      /**
+       * Callback after api.js is loaded.
+       */
+      function gapiLoaded() {
+        gapi.load('client', initializeGapiClient);
+      }
+
+      /**
+       * Callback after the API client is loaded. Loads the
+       * discovery doc to initialize the API.
+       */
+      async function initializeGapiClient() {
+        await gapi.client.init({
+          apiKey: API_KEY,
+          discoveryDocs: [DISCOVERY_DOC],
+        });
+        gapiInited = true;
+        maybeEnableButtons();
+      }
+
+      /**
+       * Callback after Google Identity Services are loaded.
+       */
+      function gisLoaded() {
+        tokenClient = google.accounts.oauth2.initTokenClient({
+          client_id: CLIENT_ID,
+          scope: SCOPES,
+          callback: '', // defined later
+        });
+        gisInited = true;
+        maybeEnableButtons();
+      }
+
+      /**
+       * Enables user interaction after all libraries are loaded.
+       */
+      function maybeEnableButtons() {
+        if (gapiInited && gisInited) {
+          document.getElementById('authorize_button').style.visibility = 'visible';
+        }
+      }
+
+      /**
+       *  Sign in the user upon button click.
+       */
+      function handleAuthClick() {
+        tokenClient.callback = async (resp) => {
+          if (resp.error !== undefined) {
+            throw (resp);
+          }
+          document.getElementById('signout_button').style.visibility = 'visible';
+          document.getElementById('authorize_button').innerText = 'Refresh';
+          await listFiles();
+        };
+
+        if (gapi.client.getToken() === null) {
+          // Prompt the user to select a Google Account and ask for consent to share their data
+          // when establishing a new session.
+          tokenClient.requestAccessToken({prompt: 'consent'});
+        } else {
+          // Skip display of account chooser and consent dialog for an existing session.
+          tokenClient.requestAccessToken({prompt: ''});
+        }
+      }
+
+      /**
+       *  Sign out the user upon button click.
+       */
+      function handleSignoutClick() {
+        const token = gapi.client.getToken();
+        if (token !== null) {
+          google.accounts.oauth2.revoke(token.access_token);
+          gapi.client.setToken('');
+          document.getElementById('content').innerText = '';
+          document.getElementById('authorize_button').innerText = 'Authorize';
+          document.getElementById('signout_button').style.visibility = 'hidden';
+        }
+      }
+
+      /**
+       * Print metadata for first 10 files.
+       */
+      async function listFiles() {
+        let response;
+        try {
+          response = await gapi.client.drive.files.list({
+            'pageSize': 10,
+            'fields': 'files(id, name)',
+          });
+        } catch (err) {
+          document.getElementById('content').innerText = err.message;
+          return;
+        }
+        const files = response.result.files;
+        if (!files || files.length == 0) {
+          document.getElementById('content').innerText = 'No files found.';
+          return;
+        }
+        // Flatten to string to display
+        const output = files.reduce(
+            (str, file) => `${str}${file.name} (${file.id})\n`,
+            'Files:\n');
+        document.getElementById('content').innerText = output;
+      }
+    </script>
+    <script async defer src="https://apis.google.com/js/api.js" onload="gapiLoaded()"></script>
+    <script async defer src="https://accounts.google.com/gsi/client" onload="gisLoaded()"></script>
+  </body>
+</html>
+
+<!--html>
 <head>
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
@@ -6,7 +155,126 @@
 </head>
 
 <body>
-7
+9
+
+
+<script>
+  var YOUR_CLIENT_ID = '884639181188-0l83tpcvhjs71dpcoduh8p3g5t2tbtrs.apps.googleusercontent.com';
+  var YOUR_REDIRECT_URI = 'https://sergiystoyan.github.io/HawkeyeEstimator/';
+
+  // Parse query string to see if page request is coming from OAuth 2.0 server.
+  var fragmentString = location.hash.substring(1);
+  var params = {};
+  var regex = /([^&=]+)=([^&]*)/g, m;
+  while (m = regex.exec(fragmentString)) {
+    params[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
+  }
+  if (Object.keys(params).length > 0 && params['state']) {
+    if (params['state'] == localStorage.getItem('state')) {
+      localStorage.setItem('oauth2-test-params', JSON.stringify(params) );
+
+      trySampleRequest();
+    } else {
+      console.log('State mismatch. Possible CSRF attack');
+    }
+  }
+
+  // Function to generate a random state value
+  function generateCryptoRandomState() {
+    const randomValues = new Uint32Array(2);
+    window.crypto.getRandomValues(randomValues);
+
+    // Encode as UTF-8
+    const utf8Encoder = new TextEncoder();
+    const utf8Array = utf8Encoder.encode(
+      String.fromCharCode.apply(null, randomValues)
+    );
+
+    // Base64 encode the UTF-8 data
+    return btoa(String.fromCharCode.apply(null, utf8Array))
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=+$/, '');
+  }
+
+  // If there's an access token, try an API request.
+  // Otherwise, start OAuth 2.0 flow.
+  function trySampleRequest() {
+    var params = JSON.parse(localStorage.getItem('oauth2-test-params'));
+	console.log('1', params);
+    if (params && params['access_token']) {
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET',
+          'https://www.googleapis.com/drive/v3/about?fields=user&' +
+          'access_token=' + params['access_token']);
+      xhr.onreadystatechange = function (e) {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+          console.log(xhr.response);
+        } else if (xhr.readyState === 4 && xhr.status === 401) {
+          // Token invalid, so prompt for user permission.
+          oauth2SignIn();
+        }
+      };
+      xhr.send(null);
+    } else {
+      oauth2SignIn();
+    }
+  }
+
+  /*
+   * Create form to request access token from Google's OAuth 2.0 server.
+   */
+  function oauth2SignIn() {
+    // create random state value and store in local storage
+    var state = generateCryptoRandomState();
+    localStorage.setItem('state', state);
+
+    // Google's OAuth 2.0 endpoint for requesting an access token
+    var oauth2Endpoint = 'https://accounts.google.com/o/oauth2/v2/auth';
+
+    // Create element to open OAuth 2.0 endpoint in new window.
+    var form = document.createElement('form');
+    form.setAttribute('method', 'GET'); // Send as a GET request.
+    form.setAttribute('action', oauth2Endpoint);
+
+    // Parameters to pass to OAuth 2.0 endpoint.
+    var params = {'client_id': YOUR_CLIENT_ID,
+                  'redirect_uri': YOUR_REDIRECT_URI,
+                  'scope': 'https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/drive.metadata.readonly',
+                  'state': state,
+                  'include_granted_scopes': 'true',
+                  'response_type': 'token'};
+
+    // Add form parameters as hidden input values.
+    for (var p in params) {
+      var input = document.createElement('input');
+      input.setAttribute('type', 'hidden');
+      input.setAttribute('name', p);
+      input.setAttribute('value', params[p]);
+      form.appendChild(input);
+    }
+
+    // Add form to page and submit it to open the OAuth 2.0 endpoint.
+    document.body.appendChild(form);
+    form.submit();
+  }
+</script>
+
+<button onclick="trySampleRequest();">Try sample request</button>
+
+</body>
+</html-->
+
+
+<!--html>
+<head>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+</head>
+
+<body>
+
 <script>
 
 window.googleDocCallback = function () {console.log('!!!'); return true; };
@@ -78,4 +346,4 @@ console.log('fetch', f);
 
 
 </body>
-</html>
+</html-->
